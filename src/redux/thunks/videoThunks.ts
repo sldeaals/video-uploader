@@ -1,28 +1,39 @@
-import { AppDispatch } from "../../store/store";
-import { uploadStart, uploadSuccess, uploadFail } from "../slices/videoSlice";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { startUpload, updateProgress, uploadSuccess, uploadFailure } from "../slices/videoSlice";
 
-export const uploadVideoThunk =
-  (file: File) => async (dispatch: AppDispatch) => {
-    dispatch(uploadStart());
+interface Chunk {
+  index: number;
+  data: Blob;
+}
 
-    const formData = new FormData();
-    formData.append("video", file);
+interface UploadPayload {
+  fileName: string;
+  chunks: Chunk[];
+}
+
+export const uploadVideoThunk = createAsyncThunk<void, UploadPayload>(
+  "upload/video",
+  async ({ fileName, chunks }, { dispatch }) => {
+    dispatch(startUpload());
 
     try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      for (let i = 0; i < chunks.length; i++) {
+        const formData = new FormData();
+        formData.append("file", chunks[i].data);
+        formData.append("fileName", fileName);
+        formData.append("index", chunks[i].index.toString());
 
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
+        await fetch("http://localhost:3001/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        dispatch(updateProgress(((i + 1) / chunks.length) * 100));
       }
 
-      const data = await response.json();
-      dispatch(uploadSuccess(data.videoUrl));
+      dispatch(uploadSuccess());
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error occurred";
-      dispatch(uploadFail(errorMessage));
+      dispatch(uploadFailure("Upload failed"));
     }
-  };
+  }
+);

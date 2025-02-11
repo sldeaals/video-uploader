@@ -1,41 +1,39 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface VideoState {
+interface UploadState {
   uploading: boolean;
   progress: number;
-  videoUrl: string | null;
-  errorMessage: string | null;
+  error: string | null;
 }
 
-const initialState: VideoState = {
+const initialState: UploadState = {
   uploading: false,
   progress: 0,
-  videoUrl: null,
-  errorMessage: null,
+  error: null,
 };
 
-const videoSlice = createSlice({
-  name: "video",
+const uploadSlice = createSlice({
+  name: "upload",
   initialState,
   reducers: {
-    uploadStart(state) {
+    startUpload: (state) => {
       state.uploading = true;
       state.progress = 0;
+      state.error = null;
     },
-    uploadProgress(state, action) {
+    updateProgress: (state, action: PayloadAction<number>) => {
       state.progress = action.payload;
     },
-    uploadSuccess(state, action) {
+    uploadSuccess: (state) => {
       state.uploading = false;
-      state.videoUrl = action.payload;
+      state.progress = 100;
     },
-    uploadFail(state, action) {
+    uploadFailure: (state, action: PayloadAction<string>) => {
       state.uploading = false;
-      state.errorMessage = action.payload.errorMessage;
+      state.error = action.payload;
     },
   },
 });
 
-export const { uploadStart, uploadProgress, uploadSuccess, uploadFail } = videoSlice.actions;
-
-export default videoSlice.reducer;
+export const { startUpload, updateProgress, uploadSuccess, uploadFailure } = uploadSlice.actions;
+export default uploadSlice.reducer;

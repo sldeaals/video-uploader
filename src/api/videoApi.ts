@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://your-api.com/api/video";
+const API_BASE_URL = "http://localhost:3001/api/upload";
 
 /**
  * Uploads a video file to server.

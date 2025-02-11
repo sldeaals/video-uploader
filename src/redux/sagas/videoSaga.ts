@@ -1,24 +1,10 @@
 import { put, takeLatest } from "redux-saga/effects";
-import { uploadStart, uploadSuccess, uploadFail } from "../slices/videoSlice";
+import { uploadVideoThunk } from "../thunks/videoThunks";
 
-function* uploadVideoSaga(action: any) {
-  try {
-    yield put(uploadStart());
-    const response: Response = yield fetch("/api/upload", {
-      method: "POST",
-      body: action.payload,
-    });
-    const data: { videoUrl: string } = yield response.json();
-    yield put(uploadSuccess(data.videoUrl));
-  } catch (error) {
-    yield put(uploadFail);
-  }
+function* handleUploadSuccess() {
+  yield put({ type: "notifications/show", payload: "Upload completed successfully!" });
 }
 
-export function* watchVideoUpload() {
-  yield takeLatest("video/uploadStart", uploadVideoSaga);
-}
-
-export default function* videoSaga() {
-  yield watchVideoUpload();
+export function* uploadSaga() {
+  yield takeLatest(uploadVideoThunk.fulfilled, handleUploadSuccess);
 }
