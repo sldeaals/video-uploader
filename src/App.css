@@ -107,10 +107,11 @@
 
 /* Video Player Styling */
 .video-player {
-  max-width: 500px;
+  max-width: 430px;
   width: 100%;
   border: 1px solid #ddd;
-  padding: 10px;
+  padding: 20px;
   border-radius: 8px;
   background: white;
+  margin: 32px auto auto;
 }

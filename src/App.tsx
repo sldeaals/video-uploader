@@ -12,7 +12,7 @@ const App: React.FC = () => {
         <h1>Video Uploader</h1>
       </header>
       <div className="App-body">
-        <VideoUpload />
+        <VideoUpload setVideoUrl={setVideoUrl}/>
         {videoUrl && <VideoPlayer videoUrl={videoUrl} />}
       </div>
     </div>
