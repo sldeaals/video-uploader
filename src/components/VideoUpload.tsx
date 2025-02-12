@@ -5,7 +5,11 @@ import { uploadVideoThunk } from "../redux/thunks/videoThunks";
 
 const createWorker = () => new Worker(new URL("../workers/uploadWorker.ts", import.meta.url), { type: "module" });
 
-const VideoUpload: React.FC = () => {
+interface VideoUploadProps {
+  setVideoUrl?: (url: string | null) => void;
+}
+
+const VideoUpload: React.FC<VideoUploadProps> = ({ setVideoUrl }) => {
   const dispatch = useAppDispatch();
   const { progress, uploading, error } = useSelector((state: RootState) => state.upload);
 
@@ -26,23 +30,23 @@ const VideoUpload: React.FC = () => {
 
     worker.onmessage = (e) => {
       const { chunks } = e.data;
-      dispatch(uploadVideoThunk({ fileName: file.name, chunks }));
+      dispatch(uploadVideoThunk({ fileName: file.name, chunks }))/*.unwrap().then((uploadedUrl) => setVideoUrl(uploadedUrl))*/;
       worker.terminate();
     };
   };
 
   return (
-    <div className="p-4 border rounded w-full max-w-lg mx-auto">
-      <input type="file" onChange={handleFileChange} accept="video/*" className="mb-2" />
+    <div className="video-upload">
+      <input type="file" onChange={handleFileChange} accept="video/*" className="file-input" />
       <button
         onClick={handleUpload}
         disabled={!file || uploading}
-        className="bg-blue-500 text-white px-4 py-2 mt-2 rounded w-full"
+        className="upload-btn"
       >
         {uploading ? "Uploading..." : "Upload Video"}
       </button>
-      {uploading && <progress value={progress} max="100" className="w-full mt-2"></progress>}
-      {error && <p className="text-red-500 mt-2">{error}</p>}
+      {uploading && <progress value={progress} max="100" className="progress-bar"></progress>}
+      {error && <p className="error-text">{error}</p>}
     </div>
   );
 };

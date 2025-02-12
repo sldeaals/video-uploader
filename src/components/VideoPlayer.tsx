@@ -1,16 +1,15 @@
-//import { useSelector } from "react-redux";
-//import { RootState } from "../store/store";
+import React from "react";
+import ReactPlayer from "react-player";
 
-const VideoPlayer = () => {
-  /*const { videoUrl } = useSelector((state: RootState) => state.video);
+const VideoPlayer: React.FC<{ videoUrl: string | null }> = ({ videoUrl }) => {
+  if (!videoUrl) return null;
 
-  return videoUrl ? (
-    <video width="600" controls>
-      <source src={videoUrl} type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  ) : null;*/
-   return null;
+  return (
+    <div className="video-player">
+      <h2>Uploaded Video</h2>
+      <ReactPlayer url={videoUrl} controls width="100%" height="auto" />
+    </div>
+  );
 };
 
 export default VideoPlayer;
