@@ -22,8 +22,11 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "dev-start": "concurrently \"npm run server\" \"npm run client\"",
     "setup": "nvm i && nvm use && npm install",
     "dev": "npm run setup && npm run start",
+    "server": "node server/server.js",
+    "client": "react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -49,6 +52,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
+    "concurrently": "^9.1.2",
     "postcss": "^8.5.2",
     "worker-loader": "^3.0.8"
   }
