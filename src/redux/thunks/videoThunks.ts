@@ -1,0 +1,54 @@
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { startUpload, updateProgress, uploadSuccess, uploadFailure } from "../slices/videoSlice";
+
+interface Chunk {
+  index: number;
+  data: Blob;
+}
+
+interface UploadPayload {
+  fileName: string;
+  chunks: Chunk[];
+}
+
+export const uploadVideoThunk = createAsyncThunk<string, UploadPayload>(
+  "upload/video",
+  async ({ fileName, chunks }, { dispatch, rejectWithValue }) => {
+    dispatch(startUpload());
+
+    try {
+      for (let i = 0; i < chunks.length; i++) {
+        const formData = new FormData();
+        formData.append("file", chunks[i].data);
+        formData.append("fileName", fileName);
+        formData.append("index", chunks[i].index.toString());
+
+        await fetch(`${process.env.REACT_APP_API_BASE_URL}/upload`, {
+          method: "POST",
+          body: formData,
+        });
+
+        dispatch(updateProgress(((i + 1) / chunks.length) * 100));
+      }
+
+      const mergeResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/merge`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileName, totalChunks: chunks.length }),
+      });
+
+      if (!mergeResponse.ok) {
+        throw new Error("Merge failed");
+      }
+
+      const responseData = await mergeResponse.json();
+      const uploadedUrl = responseData.url;
+
+      dispatch(uploadSuccess());
+      return uploadedUrl;
+    } catch (error) {
+      dispatch(uploadFailure("Upload failed"));
+      return rejectWithValue("Upload failed");
+    }
+  }
+);
