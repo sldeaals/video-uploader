@@ -57,19 +57,36 @@
   margin-bottom: 10px;
 }
 
-.upload-btn {
-  background-color: #007bff;
-  color: white;
+.upload-btn, .clear-btn {
   border: none;
-  padding: 10px;
+  padding: 10px 15px;
   width: 100%;
   border-radius: 5px;
+  margin-bottom: 10px;
   cursor: pointer;
 }
 
+.upload-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.upload-btn:hover {
+  background-color: blue;
+}
+
 .upload-btn:disabled {
-  background-color: #ccc;
+  background-color: #cccccc;
   cursor: not-allowed;
+}
+
+.clear-btn {
+  background-color: #ff3333;
+  color: white;
+}
+
+.clear-btn:hover {
+  background-color: red;
 }
 
 .progress-bar {
@@ -79,6 +96,12 @@
 
 .error-text {
   color: red;
+  margin-top: 10px;
+}
+
+.success-text {
+  color: green;
+  font-weight: bold;
   margin-top: 10px;
 }
 

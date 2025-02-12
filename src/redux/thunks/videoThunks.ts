@@ -11,9 +11,9 @@ interface UploadPayload {
   chunks: Chunk[];
 }
 
-export const uploadVideoThunk = createAsyncThunk<void, UploadPayload>(
+export const uploadVideoThunk = createAsyncThunk<string, UploadPayload>(
   "upload/video",
-  async ({ fileName, chunks }, { dispatch }) => {
+  async ({ fileName, chunks }, { dispatch, rejectWithValue }) => {
     dispatch(startUpload());
 
     try {
@@ -41,9 +41,14 @@ export const uploadVideoThunk = createAsyncThunk<void, UploadPayload>(
         throw new Error("Merge failed");
       }
 
+      const responseData = await mergeResponse.json();
+      const uploadedUrl = responseData.url;
+
       dispatch(uploadSuccess());
+      return uploadedUrl;
     } catch (error) {
       dispatch(uploadFailure("Upload failed"));
+      return rejectWithValue("Upload failed");
     }
   }
 );
