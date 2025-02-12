@@ -31,6 +31,16 @@ export const uploadVideoThunk = createAsyncThunk<void, UploadPayload>(
         dispatch(updateProgress(((i + 1) / chunks.length) * 100));
       }
 
+      const mergeResponse = await fetch("http://localhost:3001/api/merge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileName, totalChunks: chunks.length }),
+      });
+
+      if (!mergeResponse.ok) {
+        throw new Error("Merge failed");
+      }
+
       dispatch(uploadSuccess());
     } catch (error) {
       dispatch(uploadFailure("Upload failed"));

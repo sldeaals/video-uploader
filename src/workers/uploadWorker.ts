@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-export {}; // 👈 Fixes the TS1208 error
+export {};
 
 self.onmessage = (event) => {
   const { file, chunkSize } = event.data;
