@@ -23,7 +23,7 @@ export const uploadVideoThunk = createAsyncThunk<void, UploadPayload>(
         formData.append("fileName", fileName);
         formData.append("index", chunks[i].index.toString());
 
-        await fetch("http://localhost:3001/api/upload", {
+        await fetch(`${process.env.REACT_APP_API_BASE_URL}/upload`, {
           method: "POST",
           body: formData,
         });
@@ -31,7 +31,7 @@ export const uploadVideoThunk = createAsyncThunk<void, UploadPayload>(
         dispatch(updateProgress(((i + 1) / chunks.length) * 100));
       }
 
-      const mergeResponse = await fetch("http://localhost:3001/api/merge", {
+      const mergeResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/merge`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ fileName, totalChunks: chunks.length }),

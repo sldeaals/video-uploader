@@ -1,5 +1,3 @@
-const API_BASE_URL = "http://localhost:3001/api/upload";
-
 /**
  * Uploads a video file to server.
  * @param file - the video file to upload
@@ -11,7 +9,7 @@ export const uploadVideo = async (file: File): Promise<{ url: string }> => {
   formData.append("video", file);
 
   try {
-    const response = await fetch(`${API_BASE_URL}`, {
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/upload`, {
       method: "POST",
       body: formData,
     });
@@ -33,7 +31,7 @@ export const uploadVideo = async (file: File): Promise<{ url: string }> => {
  */
 export const fetchVideos = async (): Promise<{ url: string }[]> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/list`);
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/list`);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch videos: ${response.statusText}`);
