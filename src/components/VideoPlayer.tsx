@@ -1,8 +1,14 @@
 import React from "react";
 import ReactPlayer from "react-player";
 
-const VideoPlayer: React.FC<{ videoUrl: string | null }> = ({ videoUrl }) => {
-  if (!videoUrl) return null;
+interface VideoPlayerProps {
+  videoUrl: string | null;
+}
+
+const VideoPlayer: React.FC<VideoPlayerProps> = React.memo(({ videoUrl }) => {
+  if (!videoUrl) {
+    return null;
+  }
 
   return (
     <div className="video-player">
@@ -10,6 +16,6 @@ const VideoPlayer: React.FC<{ videoUrl: string | null }> = ({ videoUrl }) => {
       <ReactPlayer url={videoUrl} controls width="100%" height="auto" />
     </div>
   );
-};
+});
 
 export default VideoPlayer;
