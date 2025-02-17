@@ -105,13 +105,77 @@
   margin-top: 10px;
 }
 
+.pause-btn,
+.resume-btn {
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100px;
+}
+
+.pause-btn {
+  background-color: #ff9800;
+  color: white;
+}
+
+.pause-btn:hover {
+  background-color: #e68900;
+}
+
+.resume-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.resume-btn:hover {
+  background-color: #43a047;
+}
+
 /* Video Player Styling */
 .video-player {
   max-width: 430px;
   width: 100%;
+  min-height: 355px;
+  height: 100%;
+  max-height: 768px;
   border: 1px solid #ddd;
   padding: 20px;
   border-radius: 8px;
   background: white;
   margin: 32px auto auto;
+}
+
+/* Video List Styling */
+.video-list {
+  max-width: 430px;
+  width: 100%;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background: #f9f9f9;
+  margin: 32px auto auto;
+}
+
+.video-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.video-list li {
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  word-wrap: break-word;
+}
+
+.video-list li:hover {
+  background-color: #ddd;
+}
+
+.selected-video {
+  background-color: #007bff !important;
+  color: white;
+  font-weight: bold;
 }
