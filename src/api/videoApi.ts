@@ -31,13 +31,16 @@ export const uploadVideo = async (file: File): Promise<{ url: string }> => {
  */
 export const fetchVideos = async (): Promise<{ url: string }[]> => {
   try {
-    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/list`);
+    const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/videos`);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch videos: ${response.statusText}`);
     }
 
-    return response.json();
+    const videoUrls: string[] = await response.json();
+    const uniqueVideos = Array.from(new Set(videoUrls));
+
+    return uniqueVideos.map(url => ({ url }));
   } catch (error) {
     console.error("Error fetching videos:", error);
     throw error;
