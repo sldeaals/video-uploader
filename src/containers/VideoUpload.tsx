@@ -4,8 +4,6 @@ import { RootState, useAppDispatch } from "../store/store";
 import { uploadVideoThunk } from "../redux/thunks/videoThunks";
 import VideoUpload from "../components/VideoUpload";
 
-const createWorker = () => new Worker(new URL("../workers/uploadWorker", import.meta.url), { type: "module"});
-
 interface VideoUploadContainerProps {
   setVideoUrl?: (url: string | null) => void;
 }
@@ -33,21 +31,23 @@ const VideoUploadContainer: React.FC<VideoUploadContainerProps> = ({ setVideoUrl
       return;
     }
 
-    const worker = createWorker();
-    worker.postMessage({ file, chunkSize });
-
-    worker.onmessage = (e) => {
-      const { chunks } = e.data;
-      dispatch(uploadVideoThunk({ fileName: file.name, chunks }))
-        .unwrap()
-        .then((uploadedUrl: string) => {
-          setSuccessMessage("Upload successful!");
-          setUploadComplete(true);
-          if (setVideoUrl) setVideoUrl(uploadedUrl);
-        })
-        .catch((error) => console.error("Upload failed:", error));
-      worker.terminate();
+    const fileChunks: { index: number; data: Blob }[] = [];
+    const totalChunks = Math.ceil(file.size / chunkSize);
+    
+    for (let i = 0; i < totalChunks; i++) {
+      const start = i * chunkSize;
+      const end = Math.min(start + chunkSize, file.size);
+      fileChunks.push({ index: i, data: file.slice(start, end) });
     }
+    
+    dispatch(uploadVideoThunk({ fileName: file.name, chunks: fileChunks }))
+      .unwrap()
+      .then((uploadedUrl: string) => {
+        setSuccessMessage("Upload successful!");
+        setUploadComplete(true);
+        if (setVideoUrl) setVideoUrl(uploadedUrl);
+      })
+      .catch((error) => console.error("Upload failed:", error));
   }
 
   const handleClear  = () => {
