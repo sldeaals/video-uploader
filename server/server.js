@@ -60,6 +60,16 @@ app.post("/api/merge", (req, res) => {
   appendChunk();
 });
 
+app.get("/api/videos", (req, res) => {
+  fs.readdir(uploadDir, (err, files) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to fetch videos" });
+    }
+    const videoUrls = files.map(file => `http://localhost:${port}/uploads/${file}`);
+    res.json(videoUrls); 
+  });
+});
+
 app.use("/uploads", express.static(uploadDir));
 
 app.listen(port, () => {
