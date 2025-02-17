@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { RootState, useAppDispatch } from "../store/store";
 import { uploadVideoThunk } from "../redux/thunks/videoThunks";
 import VideoUpload from "../components/VideoUpload";
+import { setProgress, setUploadPaused } from "../redux/slices/videoSlice";
+import { CHUNK_SIZE } from "../constants/constants";
 
 interface VideoUploadContainerProps {
   setVideoUrl?: (url: string | null) => void;
@@ -10,10 +12,9 @@ interface VideoUploadContainerProps {
 
 const VideoUploadContainer: React.FC<VideoUploadContainerProps> = ({ setVideoUrl }) => {
   const dispatch = useAppDispatch();
-  const { progress, uploading, error } = useSelector((state: RootState) => state.upload);
+  const { progress, uploading, error, paused } = useSelector((state: RootState) => state.upload);
 
   const [file, setFile] = useState<File | null>(null);
-  const [chunkSize] = useState<number>(5 * 1024 * 1024);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [uploadComplete, setUploadComplete] = useState<boolean>(false);
   const [inputKey, setInputKey] =  useState<any>(Date.now());
@@ -32,11 +33,11 @@ const VideoUploadContainer: React.FC<VideoUploadContainerProps> = ({ setVideoUrl
     }
 
     const fileChunks: { index: number; data: Blob }[] = [];
-    const totalChunks = Math.ceil(file.size / chunkSize);
+    const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
     
     for (let i = 0; i < totalChunks; i++) {
-      const start = i * chunkSize;
-      const end = Math.min(start + chunkSize, file.size);
+      const start = i * CHUNK_SIZE;
+      const end = Math.min(start + CHUNK_SIZE, file.size);
       fileChunks.push({ index: i, data: file.slice(start, end) });
     }
     
@@ -50,11 +51,24 @@ const VideoUploadContainer: React.FC<VideoUploadContainerProps> = ({ setVideoUrl
       .catch((error) => console.error("Upload failed:", error));
   }
 
+  const  handlePause = () => {
+    dispatch(setUploadPaused(true));
+  }
+
+  const handleResume = () => {
+    dispatch(setUploadPaused(false));
+    handleUpload();
+  }
+
   const handleClear  = () => {
     setFile(null);
     setSuccessMessage(null);
     setUploadComplete(false);
     setInputKey(Date.now());
+
+    dispatch(setProgress(0));
+    dispatch(setUploadPaused(false));
+
     if (setVideoUrl) {
       setVideoUrl(null);
     }
@@ -64,11 +78,14 @@ const VideoUploadContainer: React.FC<VideoUploadContainerProps> = ({ setVideoUrl
     <VideoUpload
       handleFileChange={handleFileChange}
       handleUpload={handleUpload}
+      handlePause={handlePause}
+      handleResume={handleResume}
       handleClear={handleClear}
       inputKey={inputKey}
       file={file}
       uploading={uploading}
       uploadComplete={uploadComplete}
+      paused={paused}
       progress={progress}
       error={error}
       successMessage={successMessage}

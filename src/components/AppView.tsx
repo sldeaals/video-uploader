@@ -1,6 +1,6 @@
 import React from "react";
-import VideoUploadContainer from "../containers/VideoUpload";
-import VideoPlayer from "./VideoPlayer";
+import VideoUploadContainer from "../containers/VideoUploadContainer";
+import VideoContainer from "../containers/VideoContainer";
 import "../App.css";
 
 interface AppViewProps {
@@ -16,7 +16,7 @@ const AppView: React.FC<AppViewProps> = React.memo(({ videoUrl, setVideoUrl }) =
       </header>
       <div className="App-body">
         <VideoUploadContainer setVideoUrl={setVideoUrl} />
-        {videoUrl && <VideoPlayer videoUrl={videoUrl} />}
+        <VideoContainer selectedVideoUrl={videoUrl} setSelectedVideoUrl={setVideoUrl} />
       </div>
     </div>
   );
